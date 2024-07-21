@@ -33,8 +33,8 @@ public class AuthenticationService {
         var userRole = this.roleRepository.findByName("USER")
                 .orElseThrow(() -> new IllegalStateException("Role USER was not initialize"));
         var user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
+                .firstName(request.getFirstname())
+                .lastName(request.getLastname())
                 .email(request.getEmail())
                 .password(this.passwordEncoder.encode(request.getPassword()))
                 .accountLocked(false)

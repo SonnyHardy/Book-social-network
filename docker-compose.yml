@@ -1,5 +1,5 @@
 services:
-  postgres:       # Base de donnees
+  postgres-sql-bsn:       # Base de donnees
     container_name: postgres-sql-bsn
     image: postgres:16.3-bullseye
     environment:
