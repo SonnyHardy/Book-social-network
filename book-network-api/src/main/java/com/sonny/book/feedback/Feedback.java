@@ -1,0 +1,29 @@
+package com.sonny.book.feedback;
+
+import com.sonny.book.book.Book;
+import com.sonny.book.common.BaseEntity;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+@Getter
+@Setter
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@EntityListeners(AuditingEntityListener.class)
+public class Feedback extends BaseEntity {
+
+    private double note;      // 1 - 5
+    private String comment;
+
+    @ManyToOne
+    @JoinColumn(name = "book_id")
+    private Book book;
+
+}

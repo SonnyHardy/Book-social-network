@@ -1,5 +1,7 @@
 package com.sonny.book.user;
 
+import com.sonny.book.book.Book;
+import com.sonny.book.history.BookTransactionHistory;
 import com.sonny.book.role.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -43,6 +45,12 @@ public class User implements UserDetails, Principal {
 
     @ManyToMany(fetch = FetchType.EAGER)     // pour chaque user on a une liste de roles
     private List<Role> roles;
+
+    @OneToMany(mappedBy = "owner")      // meme nom que la variable dans la classe Book
+    private List<Book> books;
+
+    @OneToMany(mappedBy = "user")       // meme nom que la variable dans la classe BookTransactionHistory
+    private List<BookTransactionHistory> histories;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
