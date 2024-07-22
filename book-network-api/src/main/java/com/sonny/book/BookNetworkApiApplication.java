@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 @SpringBootApplication
-@EnableJpaAuditing
+@EnableJpaAuditing(auditorAwareRef = "auditorAware")    // Meme nom que le Bean dans la classe BeansConfig
 @EnableAsync
 public class BookNetworkApiApplication {
 
