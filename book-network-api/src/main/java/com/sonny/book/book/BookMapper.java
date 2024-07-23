@@ -1,5 +1,7 @@
 package com.sonny.book.book;
 
+import com.sonny.book.file.FileUtils;
+import com.sonny.book.history.BookTransactionHistory;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,7 +30,19 @@ public class BookMapper {
                 .archived(book.isArchived())
                 .shareable(book.isShareable())
                 .owner(book.getOwner().fullName())
-                //.cover()   later
+                .cover(FileUtils.readFileFromLocation(book.getBookCover()))
+                .build();
+    }
+
+    public BorrowedBookResponse toBorrowedBookResponse(BookTransactionHistory transactionHistory) {
+        return BorrowedBookResponse.builder()
+                .id(transactionHistory.getBook().getId())
+                .title(transactionHistory.getBook().getTitle())
+                .authorName(transactionHistory.getBook().getAuthorName())
+                .isbn(transactionHistory.getBook().getIsbn())
+                .rate(transactionHistory.getBook().getRate())
+                .returned(transactionHistory.isReturned())
+                .returnApproved(transactionHistory.isReturnApproved())
                 .build();
     }
 }
