@@ -2,12 +2,18 @@ package com.sonny.book.feedback;
 
 import com.sonny.book.book.Book;
 import com.sonny.book.book.BookRepository;
+import com.sonny.book.common.PageResponse;
 import com.sonny.book.exception.OperationNotPermittedException;
 import com.sonny.book.user.User;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -31,4 +37,21 @@ public class FeedbackService {
         return feedbackRepository.save(feedback).getId();
     }
 
+    public PageResponse<FeedbackResponse> findAllFeedbackByBooks(int bookId, int page, int size, Authentication connectedUser) {
+        Pageable pageable = PageRequest.of(page, size);
+        User user = (User) connectedUser.getPrincipal();
+        Page<Feedback> feedbacks = feedbackRepository.findAllByBookId(bookId, pageable);
+        List<FeedbackResponse> feedbackResponses = feedbacks.stream()
+                .map(feedback -> feedbackMapper.toFeedbackResponse(feedback, user.getId()))
+                .toList();
+        return new PageResponse<>(
+                feedbackResponses,
+                feedbacks.getNumber(),
+                feedbacks.getSize(),
+                feedbacks.getTotalElements(),
+                feedbacks.getTotalPages(),
+                feedbacks.isFirst(),
+                feedbacks.isLast()
+        );
+    }
 }
