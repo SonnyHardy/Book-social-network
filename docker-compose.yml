@@ -11,8 +11,8 @@ services:
       - postgres:/data/postgres
     ports:
       - 5432:5432
-    networks:
-      - spring-demo
+    #networks:
+      #- spring-demo
     restart: no
 
   mail-dev:        # serveur pour les mails
