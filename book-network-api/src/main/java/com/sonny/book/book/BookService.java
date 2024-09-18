@@ -6,6 +6,7 @@ import com.sonny.book.file.FileStorageService;
 import com.sonny.book.history.BookTransactionHistory;
 import com.sonny.book.history.BookTransactionHistoryRepository;
 import com.sonny.book.user.User;
+import com.sonny.book.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -23,6 +25,7 @@ import java.util.List;
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final UserRepository userRepository;
     private final BookMapper bookMapper;
     private final BookTransactionHistoryRepository bookTransactionHistoryRepository;
     private final FileStorageService fileStorageService;
@@ -31,6 +34,7 @@ public class BookService {
         User user = (User) connectedUser.getPrincipal();
         Book book = bookMapper.toBook(request);
         book.setOwner(user);
+        book.setLastModifiedBy(user.getId());
         return bookRepository.save(book).getId();
     }
 
@@ -43,6 +47,7 @@ public class BookService {
     public PageResponse<BookResponse> findAllBooks(int page, int size, Authentication connectedUser) {
         User user = (User) connectedUser.getPrincipal();
          Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+         //User user = userRepository.findByEmail(connectedUser.getName()).orElseThrow(() -> new EntityNotFoundException("No user found with the email: " + connectedUser.getName()));
         Page<Book> books = bookRepository.findAllDisplayableBooks(pageable, user.getId());
         List<BookResponse> bookResponses = books.stream()
                 .map(bookMapper::toBookResponse)
