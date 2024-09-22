@@ -11,7 +11,7 @@ import java.nio.file.Path;
 public class FileUtils {
 
     public static byte[] readFileFromLocation(String fileUrl) {
-        if (fileUrl.isBlank()){
+        if (fileUrl == null || fileUrl.isBlank()){
             return null;
         }
         try {

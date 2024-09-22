@@ -27,6 +27,7 @@ export class BookCardComponent {
   @Input()
   set book(value: BookResponse) {
     this._book = value;
+    this._bookCover = this._book.cover?.join('');
   }
 
   get manage(): boolean {
@@ -39,8 +40,9 @@ export class BookCardComponent {
   }
 
   get bookCover(): string | undefined {
-    if (this._book.cover) {
-      return 'data:image/jpg;base64, ' + this._bookCover;
+    if (this._book.cover?.length) {
+      console.log(this._bookCover);
+      return 'data:image/png;base64,' + this._bookCover;
     }
     return 'https://images.unsplash.com/photo-1725615357444-6123528686cf?ixid=M3w2NTUxODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3MjY2NzM3MDZ8&ixlib=rb-4.0.3';
   }

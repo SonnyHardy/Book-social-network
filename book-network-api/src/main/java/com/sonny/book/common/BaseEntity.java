@@ -35,6 +35,7 @@ public class BaseEntity {
     @Column(updatable = false)
     private int createdBy;
     @LastModifiedBy
-    @Column(insertable = false)
+    //@Column(insertable = false)
+    @Column
     private int lastModifiedBy;
 }

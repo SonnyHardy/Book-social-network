@@ -2,7 +2,7 @@
   class="card"
   style="width: 20rem;"
 >
-  <img height="200" [src]="bookCover" class="card-img-top" alt="...">
+  <img height="200" [src]="book.cover? 'data:image/png;base64,' + book.cover: 'https://images.unsplash.com/photo-1725615357444-6123528686cf?ixid=M3w2NTUxODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3MjY2NzM3MDZ8&ixlib=rb-4.0.3'" class="card-img-top" alt="...">
 
   <div class="card-body overflow-scroll">
 

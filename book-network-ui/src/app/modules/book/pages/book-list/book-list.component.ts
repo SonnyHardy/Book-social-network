@@ -25,6 +25,7 @@ export class BookListComponent implements OnInit {
   size: number = 4;
   message: string = '';
   level: string = 'success';
+  bookCover: string | undefined;
 
   constructor(
     private bookService: BookService,
