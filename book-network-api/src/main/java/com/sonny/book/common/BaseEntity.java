@@ -28,12 +28,15 @@ public class BaseEntity {
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdDate;
+
     @LastModifiedDate
     @Column(insertable = false)
     private LocalDateTime lastModifiedDate;
+
     @CreatedBy
     @Column(updatable = false)
     private int createdBy;
+
     @LastModifiedBy
     //@Column(insertable = false)
     @Column
