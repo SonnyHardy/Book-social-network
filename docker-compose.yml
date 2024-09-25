@@ -11,8 +11,8 @@ services:
       - postgres:/data/postgres
     ports:
       - 5432:5432
-    #networks:
-      #- spring-demo
+    networks:
+      - spring-demo
     restart: no
 
   mail-dev:        # serveur pour les mails
@@ -22,6 +22,16 @@ services:
     ports:
       - 1080:1080
       - 1025:1025
+
+  bsn-api:         # image docker de notre api
+    container_name: bsn-api
+    image: sonnyhardy/bsn:1.0.0
+    expose:
+      - 8082:8082
+    networks:
+      - spring-demo
+    depends_on:
+      - postgres-sql-bsn
 
 
 
