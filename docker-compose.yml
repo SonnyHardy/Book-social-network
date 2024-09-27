@@ -25,13 +25,23 @@ services:
 
   bsn-api:         # image docker de notre api
     container_name: bsn-api
-    image: sonnyhardy/bsn:1.0.0
-    expose:
+    image: sonnyhardy/bsn-api:1.0.0
+    ports:
       - 8082:8082
     networks:
       - spring-demo
     depends_on:
       - postgres-sql-bsn
+
+  bsn-ui:
+    container_name: bsn-ui
+    image: sonnyhardy/bsn-ui:1.0.0
+    ports:
+      - 8083:80
+    networks:
+      - spring-demo
+    depends_on:
+      - bsn-api
 
 
 
