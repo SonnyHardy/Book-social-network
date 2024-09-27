@@ -3,7 +3,7 @@ name: BSN Frontend Pipeline
 on:
   push:
     branches:
-      - 04-frontend-pipeline
+      - 05-ci-cd
     paths:
       - book-network-ui/**
       - docker/frontend/**
@@ -30,8 +30,6 @@ jobs:
           cd book-network-ui
           echo "VERSION=$(jq -r '.version' package.json)" >> $GITHUB_OUTPUT
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
