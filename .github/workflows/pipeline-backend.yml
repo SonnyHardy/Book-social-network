@@ -49,13 +49,14 @@ jobs:
             mkdir -p ci-cd
 
       - name: Copy docker-compose file
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.VPS_IP }}
-          username: ${{ secrets.VPS_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "docker-compose.yml"
-          target: ci-cd
+        run: scp docker-compose.yml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }}:ci-cd/docker-compose.yml
+        #uses: appleboy/scp-action@v0.1.7
+        #with:
+          #host: ${{ secrets.VPS_IP }}
+          #username: ${{ secrets.VPS_USERNAME }}
+          #key: ${{ secrets.SSH_PRIVATE_KEY }}
+          #source: "docker-compose.yml"
+          #target: ci-cd
 
       - name: Deploy Database
         uses: appleboy/ssh-action@v1.0.3
