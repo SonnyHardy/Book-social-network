@@ -125,14 +125,15 @@ jobs:
           fetch-depth: 0
 
       - name: Setup JDK
-        uses: actions/setup-jdk@v4
+        uses: actions/setup-java@v4
         with:
-          java-version: 21
-          distribution: 'corretto'
+          distribution: 'temurin'
+          java-version: '21'
 
       - name: Build project
         run: |
           cd book-network-api
+          chmod +x ./mvnw
           ./mvnw clean package
 
       - name: Extract project version
@@ -178,4 +179,4 @@ jobs:
             export EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
             cd ci-cd
             sudo docker-compose -f docker-compose.yml pull -q
-            sudo docker-compose -f docker-compose.yml up -d
+            sudo docker-compose -f docker-compose.yml up -d bsn-api
