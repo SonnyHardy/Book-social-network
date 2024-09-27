@@ -31,6 +31,7 @@ jobs:
 
       - name: Compile project
         run: |
+          sudo su
           cd book-network-api
           ./mvnw clean compile
 
