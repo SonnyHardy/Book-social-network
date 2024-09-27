@@ -48,8 +48,10 @@ jobs:
           script: |
             mkdir -p ci-cd
 
-      - name: Copy docker-compose file
+      - name: List files
         run: ls -la
+
+      - name: Copy docker-compose file
         #run: scp -i ${{ secrets.SSH_PRIVATE_KEY }} docker-compose.yml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }}:ci-cd/docker-compose.yml
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -58,7 +60,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "docker-compose.yml"
           target: "ci-cd/docker-compose.yml"
-
 
       - name: Deploy Database
         uses: appleboy/ssh-action@v1.0.3
