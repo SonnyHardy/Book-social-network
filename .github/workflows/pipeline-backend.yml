@@ -111,6 +111,7 @@ jobs:
       - name: Build project
         run: |
           cd book-network-api
+          chmod +x ./mvnw
           ./mvnw clean package
 
   build-image:
