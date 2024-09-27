@@ -39,6 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy Database
     steps:
+      - uses: actions/checkout@v4
       - name: Create deployment folder
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -48,18 +49,15 @@ jobs:
           script: |
             mkdir -p ci-cd
 
-      - name: List files
-        run: ls -la
 
       - name: Copy docker-compose file
-        #run: scp -i ${{ secrets.SSH_PRIVATE_KEY }} docker-compose.yml ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }}:ci-cd/docker-compose.yml
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_IP }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "docker-compose.yml"
-          target: "ci-cd/docker-compose.yml"
+          target: ci-cd/docker-compose.yml
 
       - name: Deploy Database
         uses: appleboy/ssh-action@v1.0.3
