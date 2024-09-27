@@ -55,7 +55,7 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "docker-compose.yml"
-          target: ci-cd/docker-compose.yml
+          target: ci-cd
 
       - name: Deploy Database
         uses: appleboy/ssh-action@v1.0.3
