@@ -1,0 +1,158 @@
+name: BSN Backend API Pipeline
+
+on:
+  push:
+    branches:
+      - 03-backend-pipeline
+    paths:
+      - book-network-api/**
+      - docker/backend/**
+      - 'docker-compose.yml'
+      - .github/workflows/*-backend.yml
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    name: Compile project
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDK
+        uses: actions/setup-jdk@v4
+        with:
+          java-version: 21
+          distribution: 'corretto'
+
+      - name: Compile project
+        run: |
+          cd book-network-api
+          ./mvnw clean compile
+
+  unit-tests:
+    runs-on: self-hosted
+    name: Unit tests
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDK
+        uses: actions/setup-jdk@v4
+        with:
+          java-version: 21
+          distribution: 'corretto'
+
+      - name: Running unit tests
+        run: |
+          cd book-network-api
+          ./mvnw clean test
+
+  build:
+    runs-on: self-hosted
+    name: Build backend
+    needs: [compile, unit-tests]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDK
+        uses: actions/setup-jdk@v4
+        with:
+          java-version: 21
+          distribution: 'corretto'
+
+      - name: Build project
+        run: |
+          cd book-network-api
+          ./mvnw clean package
+
+  build-image:
+    name: Build Docker image
+    runs-on: self-hosted
+    needs: [build]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup JDK
+        uses: actions/setup-jdk@v4
+        with:
+          java-version: 21
+          distribution: 'corretto'
+
+      - name: Build project
+        run: |
+          cd book-network-api
+          ./mvnw clean package
+
+      - name: Extract project version
+        id: extract_version
+        run: |
+          cd book-network-api
+          echo "VERSOIN=$(./mvnw -q -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive exec:exec)" >> $GITHUB_OUTPUT
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push to DockerHub
+        uses: docker/build-push-action@v6
+        with:
+          context: book-network-api
+          file: docker/backend/Dockerfile
+          push: true
+          platforms: linux/amd64
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bsn-api:${{ steps.extract_version.outputs.VERSION }},${{ secrets.DOCKERHUB_USERNAME }}/bsn-api:latest
+          build-arg: |
+            PROFILE=dev
+            APP_VERSION=${{ steps.extract_version.outputs.VERSION }}
+
+  deploy:
+    name: Deploy Backend
+    runs-on: ubuntu-latest
+    needs: [build-image]
+    steps:
+      - name: Create deployment folder
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_IP }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            mkdir -p ci-cd
+
+      - name: Copy docker-compose file
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_IP }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "docker-compose.yml"
+          target: ci-cd/docker-compose.yml
+
+      - name: Set ENV variable and deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_IP }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            export EMAIL_HOSTNAME=${{ secrets.EMAIL_HOSTNAME }}
+            export EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }}
+            export EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
+            cd ci-cd
+            sudo docker-compose -f docker-compose.yml pull -q
+            sudo docker-compose -f docker-compose.yml up -d
