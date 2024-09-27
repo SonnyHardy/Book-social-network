@@ -3,12 +3,15 @@ name: BSN Backend API Pipeline
 on:
   push:
     branches:
-      - 03-backend-pipeline
+      - 04-frontend-pipeline
+
     paths:
       - book-network-api/**
       - docker/backend/**
       - 'docker-compose.yml'
       - .github/workflows/*-backend.yml
+  workflow_dispatch:
+
 
 jobs:
   compile:
@@ -103,6 +106,7 @@ jobs:
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
