@@ -16,7 +16,7 @@ on:
 
 jobs:
   build-image:
-    name: Build and Push frontend Docker image
+    name: Build and Push Docker image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -52,6 +52,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-image]
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Create deployment folder
         uses: appleboy/ssh-action@v1.0.3
         with:
