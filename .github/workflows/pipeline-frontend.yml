@@ -16,7 +16,7 @@ on:
 
 jobs:
   build-image:
-    name: Build frontend Docker image
+    name: Build and Push frontend Docker image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -68,7 +68,7 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "docker-compose.yml"
-          target: ci-cd/docker-compose.yml
+          target: ci-cd
 
       - name: Deploy
         uses: appleboy/ssh-action@v1.0.3
@@ -79,4 +79,4 @@ jobs:
           script: |
             cd ci-cd
             sudo docker-compose -f docker-compose.yml pull -q
-            sudo docker-compose -f docker-compose.yml up -d
+            sudo docker-compose -f docker-compose.yml up -d bsn-ui
