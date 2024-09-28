@@ -15,6 +15,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     //provideHttpClient(),
     provideHttpClient(withInterceptors([httpTokenInterceptor])),
-    {provide: ApiModule, useValue: ApiModule.forRoot({rootUrl: 'http://141.95.1.65:8082/api/v1'})},
+    //{provide: ApiModule, useValue: ApiModule.forRoot({rootUrl: 'http://141.95.1.65:8082/api/v1'})},
   ]
 };
