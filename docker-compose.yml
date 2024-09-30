@@ -22,10 +22,14 @@ services:
     ports:
       - 1080:1080
       - 1025:1025
+    networks:
+      - spring-demo
+
 
   bsn-api:         # image docker de notre api
     container_name: bsn-api
     image: sonnyhardy/bsn-api:1.0.0
+    restart: no
     ports:
       - 8082:8082
     networks:
@@ -36,6 +40,7 @@ services:
   bsn-ui:
     container_name: bsn-ui
     image: sonnyhardy/bsn-ui:1.0.0
+    restart: no
     ports:
       - 8083:80
     networks:
@@ -43,6 +48,19 @@ services:
     depends_on:
       - bsn-api
 
+  keycloak:
+    container_name: keycloak-bsn
+    image: keycloak/keycloak:25.0.6
+    restart: no
+    ports:
+      - 9090:8080
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    networks:
+      - spring-demo
+    command:
+      - "start-dev"
 
 
 networks:
