@@ -46,17 +46,19 @@ services:
     networks:
       - spring-demo
     depends_on:
-      - bsn-api
+      - bsn-api    #quay.io/keycloak/keycloak:25.0.6
 
   keycloak:
     container_name: keycloak-bsn
-    image: keycloak/keycloak:25.0.6
+    image: quay.io/keycloak/keycloak:25.0.6
     restart: no
     ports:
       - 9090:8080
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+    volumes:
+      - keycloak_data:/opt/jboss/keycloak/standalone/data
     networks:
       - spring-demo
     command:
@@ -69,5 +71,6 @@ networks:
 
 
 volumes:
+  keycloak_data:
   postgres:
     driver: local

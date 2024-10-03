@@ -35,10 +35,10 @@ public class BaseEntity {
 
     @CreatedBy
     @Column(updatable = false)
-    private int createdBy;
+    private String createdBy;
 
     @LastModifiedBy
-    //@Column(insertable = false)
-    @Column
-    private int lastModifiedBy;
+    @Column(insertable = false)
+    //@Column
+    private String lastModifiedBy;
 }

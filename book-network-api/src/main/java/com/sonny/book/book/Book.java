@@ -2,7 +2,6 @@ package com.sonny.book.book;
 
 import com.sonny.book.common.BaseEntity;
 import com.sonny.book.feedback.Feedback;
-import com.sonny.book.history.BookTransactionHistory;
 import com.sonny.book.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,9 +27,9 @@ public class Book extends BaseEntity {
     private boolean archived;
     private boolean shareable;
 
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
-    private User owner;
+    //@ManyToOne
+    //@JoinColumn(name = "owner_id")
+    //private User owner;
 
     @OneToMany(mappedBy = "book")
     private List<Feedback> feedbacks;

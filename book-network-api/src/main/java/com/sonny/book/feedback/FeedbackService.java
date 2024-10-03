@@ -4,7 +4,6 @@ import com.sonny.book.book.Book;
 import com.sonny.book.book.BookRepository;
 import com.sonny.book.common.PageResponse;
 import com.sonny.book.exception.OperationNotPermittedException;
-import com.sonny.book.user.User;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -29,8 +29,8 @@ public class FeedbackService {
         if (book.isArchived() || !book.isShareable()) {
             throw new OperationNotPermittedException("You cannot give a feedback for an archived or not shareable book");
         }
-        User user = (User) connectedUser.getPrincipal();
-        if (book.getOwner().getId() == user.getId()) {
+        //User user = (User) connectedUser.getPrincipal();
+        if (Objects.equals(book.getCreatedBy(), connectedUser.getName())) {
             throw  new OperationNotPermittedException("You cannot give a feedback to your own book");
         }
         Feedback feedback = feedbackMapper.toFeedback(request);
@@ -39,10 +39,10 @@ public class FeedbackService {
 
     public PageResponse<FeedbackResponse> findAllFeedbackByBooks(int bookId, int page, int size, Authentication connectedUser) {
         Pageable pageable = PageRequest.of(page, size);
-        User user = (User) connectedUser.getPrincipal();
+        //User user = (User) connectedUser.getPrincipal();
         Page<Feedback> feedbacks = feedbackRepository.findAllByBookId(bookId, pageable);
         List<FeedbackResponse> feedbackResponses = feedbacks.stream()
-                .map(feedback -> feedbackMapper.toFeedbackResponse(feedback, user.getId()))
+                .map(feedback -> feedbackMapper.toFeedbackResponse(feedback, connectedUser.getName()))
                 .toList();
         return new PageResponse<>(
                 feedbackResponses,
