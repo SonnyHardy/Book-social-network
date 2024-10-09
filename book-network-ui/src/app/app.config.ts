@@ -8,6 +8,7 @@ import {
 } from "@angular/common/http";
 import {httpTokenInterceptor} from "./services/interceptor/http-token.interceptor";
 import {KeycloakService} from "./services/keycloak/keycloak.service";
+import {provideToastr} from "ngx-toastr";
 
 
 export function kcFactory(kcService: KeycloakService) {
@@ -26,5 +27,13 @@ export const appConfig: ApplicationConfig = {
       useFactory: kcFactory,
       multi: true
     },
+    provideToastr({
+      progressBar: true,
+      closeButton: true,
+      newestOnTop: true,
+      tapToDismiss: true,
+      positionClass: "toast-bottom-right",
+      timeOut: 5000
+    }),
   ]
 };

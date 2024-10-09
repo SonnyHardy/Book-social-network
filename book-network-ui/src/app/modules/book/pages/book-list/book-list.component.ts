@@ -5,6 +5,7 @@ import {PageResponseBookResponse} from "../../../../services/models/page-respons
 import {NgForOf, NgIf} from "@angular/common";
 import {BookCardComponent} from "../../components/book-card/book-card.component";
 import {BookResponse} from "../../../../services/models/book-response";
+import {ToastrService} from "ngx-toastr";
 
 @Component({
   selector: 'app-book-list',
@@ -29,7 +30,8 @@ export class BookListComponent implements OnInit {
 
   constructor(
     private bookService: BookService,
-    private router: Router
+    private router: Router,
+    private toastrService: ToastrService
   ) {}
 
   ngOnInit() {
@@ -84,11 +86,10 @@ export class BookListComponent implements OnInit {
       next: () => {
         this.level = 'success';
         this.message = 'Book successfully added to your list';
+        this.toastrService.success(this.message, '👍 Done!');
       },
       error: (err) => {
-        console.log(err);
-        this.level = 'error';
-        this.message = err.error.error;
+        this.toastrService.error(err.error.error, '😥 Oups!!');
       }
     });
   }
