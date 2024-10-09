@@ -5,6 +5,9 @@ import com.sonny.book.exception.OperationNotPermittedException;
 import com.sonny.book.file.FileStorageService;
 import com.sonny.book.history.BookTransactionHistory;
 import com.sonny.book.history.BookTransactionHistoryRepository;
+import com.sonny.book.notification.Notification;
+import com.sonny.book.notification.NotificationService;
+import com.sonny.book.notification.NotificationStatus;
 import com.sonny.book.user.User;
 import com.sonny.book.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -30,6 +33,7 @@ public class BookService {
     private final BookMapper bookMapper;
     private final BookTransactionHistoryRepository bookTransactionHistoryRepository;
     private final FileStorageService fileStorageService;
+    private NotificationService notificationService;
 
     public Integer saveBook(BookRequest request, Authentication connectedUser) {
         //User user = (User) connectedUser.getPrincipal();
@@ -163,6 +167,15 @@ public class BookService {
                 .returned(false)
                 .returnApproved(false)
                 .build();
+        notificationService.sendNotification(
+                book.getCreatedBy(),
+                Notification.builder()
+                        .status(NotificationStatus.BORROWED)
+                        .message("Your book has been borrowed")
+                        .bookTitle(book.getTitle())
+                        .build()
+        );
+
         return bookTransactionHistoryRepository.save(bookTransactionHistory).getId();
     }
 
@@ -179,7 +192,18 @@ public class BookService {
         BookTransactionHistory bookTransactionHistory = bookTransactionHistoryRepository.findByBookIdAndUserId(bookId, connectedUser.getName())
                 .orElseThrow(() -> new OperationNotPermittedException("You did not borrow this book"));
         bookTransactionHistory.setReturned(true);
-        return bookTransactionHistoryRepository.save(bookTransactionHistory).getId();
+
+        var saved = bookTransactionHistoryRepository.save(bookTransactionHistory);
+        notificationService.sendNotification(
+                book.getCreatedBy(),
+                Notification.builder()
+                        .status(NotificationStatus.RETURNED)
+                        .message("Your book has been returned")
+                        .bookTitle(book.getTitle())
+                        .build()
+        );
+
+        return saved.getId();
     }
 
     public Integer approveReturnBorrowedBook(int bookId, Authentication connectedUser) {
@@ -195,7 +219,17 @@ public class BookService {
         BookTransactionHistory bookTransactionHistory = bookTransactionHistoryRepository.findByBookIdAndOwnerId(bookId, connectedUser.getName())
                 .orElseThrow(() -> new OperationNotPermittedException("The book is not returned yet. You cannot approve its return"));
         bookTransactionHistory.setReturnApproved(true);
-        return bookTransactionHistoryRepository.save(bookTransactionHistory).getId();
+
+        var saved = bookTransactionHistoryRepository.save(bookTransactionHistory);
+        notificationService.sendNotification(
+                bookTransactionHistory.getCreatedBy(),
+                Notification.builder()
+                        .status(NotificationStatus.RETURN_APPROVED)
+                        .message("Your book return has been approved")
+                        .build()
+        );
+
+        return saved.getId();
     }
 
     public void uploadBookCoverPicture(MultipartFile file, Authentication connectedUser, int bookId) {
